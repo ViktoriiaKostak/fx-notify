@@ -1,0 +1,16 @@
+{
+  "title": "Satisfied Rules",
+  "panels": [
+    {
+      "type": "table",
+      "title": "Satisfied Rules Log",
+      "targets": [
+        {
+          "expr": "satisfied_rules_total",
+          "legendFormat": "{{rule_id}}",
+          "interval": "15s"
+        }
+      ]
+    }
+  ]
+}

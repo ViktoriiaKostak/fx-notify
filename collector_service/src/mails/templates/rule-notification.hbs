@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Currency Rate Notification</title>
+  <style>
+    body {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      background-color: #f9fafb;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 600px;
+      margin: 20px auto;
+      background: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+    .header {
+      background: linear-gradient(135deg, #4a90e2, #0077b6);
+      color: #ffffff;
+      padding: 20px;
+      text-align: center;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+      letter-spacing: 1px;
+    }
+    .content {
+      padding: 20px;
+      text-align: left;
+    }
+    .content p {
+      margin: 10px 0;
+    }
+    .details {
+      margin-top: 20px;
+      background: #f4f4f4;
+      border-left: 5px solid #4a90e2;
+      padding: 15px;
+      border-radius: 5px;
+    }
+    .details p {
+      margin: 5px 0;
+    }
+    .details strong {
+      color: #0077b6;
+    }
+    .cta {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .cta a {
+      display: inline-block;
+      background: #4a90e2;
+      color: #ffffff;
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-weight: bold;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: background 0.3s;
+    }
+    .cta a:hover {
+      background: #0077b6;
+    }
+    .footer {
+      background: #f4f4f4;
+      text-align: center;
+      padding: 10px;
+      font-size: 0.8em;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🚀 Currency Rate Alert</h1>
+  </div>
+  <div class="content">
+    <p>Hello,</p>
+
+    <p>We're excited to notify you that one of your currency rate rules has been triggered! 🎉</p>
+
+    <div class="details">
+      <p><strong>Base Currency:</strong> {{baseCurrency}}</p>
+      <p><strong>Target Currency:</strong> {{targetCurrency}}</p>
+      <p><strong>Rule Type:</strong> {{ruleType}}</p>
+      <p><strong>Rule Percentage:</strong> {{rulePercentage}}%</p>
+      <p><strong>Current Rate:</strong> {{currentRate}}</p>
+    </div>
+
+    <p>This event was triggered because the exchange rate conditions you set have been met. Please review the details above.</p>
+
+    <div class="cta">
+      <a href="https://your-service-url.com" target="_blank">View More Details</a>
+    </div>
+  </div>
+  <div class="footer">
+    <p>© 2024 Currency Rate Monitoring Service. All Rights Reserved.</p>
+  </div>
+</div>
+</body>
+</html>

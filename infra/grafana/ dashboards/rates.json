@@ -1,0 +1,16 @@
+{
+  "title": "Currency Exchange Rates",
+  "panels": [
+    {
+      "type": "graph",
+      "title": "Exchange Rate Changes",
+      "targets": [
+        {
+          "expr": "currency_rate_changes",
+          "legendFormat": "{{currency}}",
+          "interval": "15s"
+        }
+      ]
+    }
+  ]
+}

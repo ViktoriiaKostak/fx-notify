@@ -1,0 +1,16 @@
+{
+  "title": "Emails Sent",
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Total Emails Sent",
+      "targets": [
+        {
+          "expr": "emails_sent_total",
+          "legendFormat": "Emails Sent",
+          "interval": "15s"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "title": "Latencies Monitoring",
+  "panels": [
+    {
+      "type": "graph",
+      "title": "API Latency",
+      "targets": [
+        {
+          "expr": "http_request_duration_seconds",
+          "legendFormat": "{{service}} - API",
+          "interval": "15h"
+        }
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "Database Latency",
+      "targets": [
+        {
+          "expr": "db_query_duration_seconds",
+          "legendFormat": "{{service}} - DB",
+          "interval": "15s"
+        }
+      ]
+    }
+  ]
+}

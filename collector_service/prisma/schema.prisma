@@ -1,0 +1,78 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-arm64-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String          @id @default(uuid())
+  email          String          @unique
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  rules          Rule[]
+  notifications  Notification[]
+}
+
+model Currency {
+  id             String          @id @default(uuid())
+  name           String
+  symbol         String          @unique
+  createdAt      DateTime        @default(now())
+  exchangeRatesBase   ExchangeRate[] @relation("BaseCurrencyRelation")
+  exchangeRatesTarget ExchangeRate[] @relation("TargetCurrencyRelation")
+  rulesBase       Rule[]         @relation("RuleBaseCurrencyRelation")
+  rulesTarget     Rule[]         @relation("RuleTargetCurrencyRelation")
+}
+
+model ExchangeRate {
+  id               String         @id @default(uuid())
+  baseCurrencyId   String
+  targetCurrencyId String
+  rate             Float
+  timestamp        DateTime
+  baseCurrency     Currency       @relation(name: "BaseCurrencyRelation", fields: [baseCurrencyId], references: [id])
+  targetCurrency   Currency       @relation(name: "TargetCurrencyRelation", fields: [targetCurrencyId], references: [id])
+}
+
+model Rule {
+  id               String         @id @default(uuid())
+  userId           String
+  baseCurrencyId   String
+  targetCurrencyId String
+  previousRate     String?
+  type             RuleType
+  percentage       Float
+  isActive         Boolean        @default(true)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  user             User           @relation(fields: [userId], references: [id])
+  baseCurrency     Currency       @relation(name: "RuleBaseCurrencyRelation", fields: [baseCurrencyId], references: [id], onDelete: Cascade)
+  targetCurrency   Currency       @relation(name: "RuleTargetCurrencyRelation", fields: [targetCurrencyId], references: [id], onDelete: Cascade)
+  notifications    Notification[] @relation("NotificationRuleRelation")
+}
+
+model Notification {
+  id             String           @id @default(uuid())
+  userId         String
+  ruleId         String
+  sentAt         DateTime
+  status         NotificationStatus
+  details        String?
+  user           User             @relation(fields: [userId], references: [id])
+  rule           Rule             @relation(fields: [ruleId], references: [id], name: "NotificationRuleRelation")
+}
+
+enum RuleType {
+  INCREASE
+  DECREASE
+}
+
+enum NotificationStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}

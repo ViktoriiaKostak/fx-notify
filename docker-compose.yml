@@ -1,0 +1,66 @@
+version: '3.8'
+services:
+  admin_service:
+    build: ./admin_service
+    ports:
+      - "6969:6969"
+    depends_on:
+      - pg
+      - redis
+    environment:
+      - NODE_ENV=${ADMIN_NODE_ENV}
+      - PORT=${ADMIN_PORT}
+      - DATABASE_URL=${ADMIN_DATABASE_URL}
+      - REDIS_URL=${ADMIN_REDIS_URL}
+
+  collector_service:
+    build: ./collector_service
+    ports:
+      - "3003:3003"
+    depends_on:
+      - pg
+      - redis
+    environment:
+      - NODE_ENV=${COLLECTOR_NODE_ENV}
+      - PORT=${COLLECTOR_PORT}
+      - DATABASE_URL=${COLLECTOR_DATABASE_URL}
+      - REDIS_URL=${COLLECTOR_REDIS_URL}
+
+  frontend_service:
+    build: ./frontend_service
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=${VITE_API_URL}
+
+  pg:
+    image: postgres:15
+    ports:
+      - 5432:5432
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+
+  redis:
+    container_name: redis
+    image: redis:latest
+    restart: always
+    ports:
+      - 6379:6379
+    volumes:
+      - "./redis_data:/data/"
+
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana
+    volumes:
+      - ./infra/grafana:/etc/grafana
+    ports:
+      - "3002:3002"
+    depends_on:
+      - prometheus
