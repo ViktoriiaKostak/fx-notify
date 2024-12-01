@@ -1,0 +1,5 @@
+build:
+  docker:
+    admin_service: ./admin_service/Dockerfile
+    collector_service: ./collector_service/Dockerfile
+    frontend_service: ./frontend_service/Dockerfile
