@@ -10,7 +10,7 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService);
 
-  const port = parseInt(process.env.PORT || configService.get('PORT'), 10) || 3003;
+  const port = parseInt(process.env.PORT || configService.get('COLLECTOR_PORT'), 10) || 3003;
 
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.TCP,

@@ -7,18 +7,18 @@ export class TelegramNotifyService {
   private readonly token = process.env.TELEGRAM_BOT_TOKEN;
   private readonly chatId = process.env.TELEGRAM_CHAT_ID;
 
-  async sendMessage(message: string): Promise<void> {
+  async sendMessage(message: string, parseMode: 'Markdown' | 'HTML' = 'Markdown'): Promise<void> {
     try {
       const response = await axios.get(
-        `https://api.telegram.org/bot${this.token}/sendMessage`,
-        {
-          params: {
-            chat_id: this.chatId,
-            text: message,
-            parse_mode: 'HTML',
-            disable_notification: false,
+          `https://api.telegram.org/bot${this.token}/sendMessage`,
+          {
+            params: {
+              chat_id: this.chatId,
+              text: message,
+              parse_mode: parseMode,
+              disable_notification: false,
+            },
           },
-        },
       );
       this.logger.log('Telegram message sent successfully:', response.data);
     } catch (error) {

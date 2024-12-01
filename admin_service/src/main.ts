@@ -39,6 +39,6 @@ async function bootstrap() {
 
   app.useLogger(new Logger());
 
-  await app.listen(configService.get('PORT'));
+  await app.listen(configService.get('ADMIN_PORT'));
 }
 bootstrap();
