@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { FetcherModule } from './fetcher/fetcher.module';
 import { ScheduleModule } from '@nestjs/schedule';
-import { CqrsModule } from '@nestjs/cqrs';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from './prisma/prisma.module';
 import { RedisModule } from './core/redis/redis.module';

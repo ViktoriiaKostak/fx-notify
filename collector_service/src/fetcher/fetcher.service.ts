@@ -1,38 +1,35 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { Interval } from '@nestjs/schedule';
+import {Injectable, Logger} from '@nestjs/common';
+import {Interval} from '@nestjs/schedule';
 import axios from 'axios';
-import { EventBus } from '@nestjs/cqrs';
-import { RatesFetchedEvent } from '../events/rates-fetched.event';
-import { InjectRedis } from '@nestjs-modules/ioredis';
+import {EventBus} from '@nestjs/cqrs';
+import {InjectRedis} from '@nestjs-modules/ioredis';
 import Redis from 'ioredis';
-import { PrismaService } from '../prisma/prisma.service';
-import * as process from 'node:process';
-import { NotificationStatus, Rule, RuleType } from '@prisma/client';
-import { RuleNotificationEvent } from '../events/rule-notification.event';
+import {PrismaService} from '../prisma/prisma.service';
+import {NotificationStatus, Rule, RuleType} from '@prisma/client';
+import {RuleNotificationEvent} from '../events/rule-notification.event';
+import {ConfigService} from "@nestjs/config";
 
 @Injectable()
 export class FetcherService {
   private readonly logger = new Logger(FetcherService.name);
-  private readonly apiUrl = process.env.API_URL;
-  private readonly apiKey = process.env.API_KEY;
+  private apiUrl: string;
+  private apiKey: string;
 
   constructor(
-    private readonly eventBus: EventBus,
-    @InjectRedis() private readonly redis: Redis,
-    private readonly prisma: PrismaService,
+      private readonly eventBus: EventBus,
+      @InjectRedis() private readonly redis: Redis,
+      private readonly prisma: PrismaService,
+      private readonly configService: ConfigService,
   ) {
+    this.apiUrl = this.configService.get<string>('API_URL');
+    this.apiKey = this.configService.get<string>('API_KEY')
   }
 
-  //   //2. У fetcher сервісі ми беремо всі правила, витягаємо всі baseCurrencies, і робимо запит на апі https://openexchangerates.org/api/latest.json?app_id={procces.env.API_REY}&base={baseCurrencies}
-  //     // 3. У відповіді шукаємо targetCurrencies і вираховуємо на який відсоток валюта baseCurrencies впала/зросла  порівняно з валютою targetCurrencies (на основі останніх даних вибірки)
-  //     // 4. Якщо правило здійснюється то відправляємо імейл
-  //
-
-  @Interval(15000)
+  @Interval(60000)
   async fetchRates() {
     try {
       const rules = await this.prisma.rule.findMany({
-        where: { isActive: true },
+        where: {isActive: true},
         include: {
           baseCurrency: true,
           targetCurrency: true,
@@ -40,11 +37,9 @@ export class FetcherService {
         },
       });
 
-      console.log(this.apiUrl);
-      console.log(this.apiKey);
 
       for (const rule of rules) {
-        const { baseCurrency, targetCurrency, percentage, type: ruleType } = rule;
+        const {baseCurrency, targetCurrency, percentage, type: ruleType} = rule;
 
         let rates = await this.redis.get(baseCurrency.symbol);
 
@@ -54,7 +49,7 @@ export class FetcherService {
           // });
           // NEED SUBSTITUTION TO THE API
           const response = await axios.get(this.apiUrl, {
-            params: { app_id: this.apiKey },
+            params: {app_id: this.apiKey},
           });
           await this.redis.set(baseCurrency.symbol, JSON.stringify(response.data.rates));
         } else {
@@ -68,20 +63,16 @@ export class FetcherService {
         }
 
         const previousRate = rule.previousRate || targetCurrencyRate;
+        console.log("previousRate", previousRate, "targetCurrencyRate", targetCurrencyRate, "rule", rule);
         const currentPercentage = ((targetCurrencyRate - previousRate) / previousRate) * 100;
 
         rule.previousRate = targetCurrencyRate;
         await this.prisma.rule.update({
-          where: { id: rule.id },
-          data: { previousRate: targetCurrencyRate.toString() },
+          where: {id: rule.id},
+          data: {previousRate: targetCurrencyRate.toString()},
         });
 
-        console.log('currentPercentage', currentPercentage);
-        console.log('percentage', percentage);
-        console.log('ruleType', ruleType);
         const isRuleConditionMet = this.checkRuleCondition(ruleType, currentPercentage, percentage);
-
-        console.log('isRuleConditionMet', isRuleConditionMet);
 
         if (isRuleConditionMet) {
           await this.createNotification(rule, currentPercentage, targetCurrencyRate);
@@ -95,23 +86,22 @@ export class FetcherService {
   }
 
   private checkRuleCondition(
-    ruleType: RuleType,
-    percentageChange: number,
-    rulePercentage: number
+      ruleType: RuleType,
+      percentageChange: number,
+      rulePercentage: number
   ): boolean {
-    // switch (ruleType) {
-    //   case RuleType.INCREASE:
-    //     return percentageChange >= rulePercentage;
-    //   case RuleType.DECREASE:
-    //     return percentageChange <= -rulePercentage;
-    // }
-    return true;
+    switch (ruleType) {
+      case RuleType.INCREASE:
+        return percentageChange >= rulePercentage;
+      case RuleType.DECREASE:
+        return percentageChange <= -rulePercentage;
+    }
   }
 
   private async createNotification(
-    rule: Rule,
-    percentageChange: number,
-    currentRate: number
+      rule: Rule,
+      percentageChange: number,
+      currentRate: number
   ) {
     try {
       const notification = await this.prisma.notification.create({
@@ -130,7 +120,6 @@ export class FetcherService {
           }),
         },
       });
-    console.log('notification', notification);
 
       await this.eventBus.publish(new RuleNotificationEvent(notification));
 
