@@ -14,7 +14,7 @@ const App: FC = () => {
       <BrowserRouter>
         <CssBaseline />
         <Container maxWidth="xs" sx={{ padding: '16px', backgroundColor: 'white', borderRadius: '8px', boxShadow: 3 }}>
-          <Typography variant="h3" gutterBottom textAlign="center" sx={{ color: '#34495e' }}>
+          <Typography variant="h5" gutterBottom textAlign="center" sx={{ color: '#34495e' }}>
             Currency Rule Management
           </Typography>
           <Routes>

@@ -32,8 +32,6 @@ This system monitors currency exchange rates every 15 seconds and sends notifica
    - In the root directory and `src` folder, copy the contents of `example.env` into `.env` files:
      ```sh
      cp example.env .env
-     cd backend
-     cp example.env .env
      ```
 
 3. Start the Application:

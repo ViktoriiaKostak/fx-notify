@@ -12,4 +12,6 @@ RUN npx prisma generate
 
 RUN npm run build
 
+npx prisma migrate dev --name init
+
 CMD ["npm", "run", "start:dev"]

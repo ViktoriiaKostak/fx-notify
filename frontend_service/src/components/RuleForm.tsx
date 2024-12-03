@@ -11,14 +11,13 @@ const RuleForm: FC<RuleFormProps> = ({ onRuleAdded, email }) => {
     email,
     baseCurrency: '',
     targetCurrency: '',
-    type: 'INCREASE', // Значення за замовчуванням
+    type: 'INCREASE',
     percentage: 0,
     isActive: true,
   });
 
   const [currencies, setCurrencies] = useState<string[]>([]);
 
-  // Отримання списку валют з бекенду
   useEffect(() => {
     const fetchCurrencies = async () => {
       try {
@@ -64,7 +63,7 @@ const RuleForm: FC<RuleFormProps> = ({ onRuleAdded, email }) => {
         targetCurrency: '',
         percentage: 0,
       });
-      onRuleAdded(); // Виклик для оновлення списку
+      onRuleAdded();
     } catch (error) {
       console.error('Error creating rule:', error);
     }
