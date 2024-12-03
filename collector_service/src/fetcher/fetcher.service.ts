@@ -25,7 +25,7 @@ export class FetcherService {
     this.apiKey = this.configService.get<string>('API_KEY')
   }
 
-  @Interval(60000)
+  @Interval(15000)
   async fetchRates() {
     try {
       const rules = await this.prisma.rule.findMany({
